@@ -1,0 +1,17 @@
+# MQTT broker related config
+[mqtt]
+host = 127.0.0.1
+port = 1883
+
+# topic for status messages
+statustopic = vlx2mqtt/status
+
+# KLF200 related config
+[velux]
+host = VELUX_KLF_3CB3
+password = klf200WiFiPassword
+
+[log]
+verbose = false
+logfile = /tmp/vlx2mqtt.log
+
