@@ -173,8 +173,8 @@ async def main(loop):
 		#see if we received some mqtt commands
 		for name, value in nodes.items():
 			if value >= 0:
+				nodes[name] = -1		#mark execuded
 				await pyvlx.nodes[name].set_position(Position(position_percent=value))
-			nodes[name] = -1		#mark execuded
 
 	logging.info("Disconnecting from broker")
 	# Publish a retained message to state that this client is offline
