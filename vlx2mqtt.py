@@ -78,7 +78,7 @@ def mqtt_on_connect(client, userdata, flags, return_code):
 		for node in pyvlx.nodes:
 			if isinstance(node, OpeningDevice):
 				logging.debug(("Subscribing to %s") % (node.name + '/set'))
-				mqttc.subscribe('/' + node.name + '/set')
+				mqttc.subscribe(node.name + '/set')
 		mqttConn = True
 	elif return_code == 1:
 		logging.info("Connection refused - unacceptable protocol version")
@@ -113,7 +113,7 @@ def mqtt_on_disconnect(mosq, obj, return_code):
 def mqtt_on_message(client, userdata, msg):
 	#set OpeningDevice? 
 	for node in pyvlx.nodes:
-		if '/'+node.name+'/set' not in msg.topic:
+		if node.name+'/set' not in msg.topic:
 			continue
 		logging.debug(("Setting %s to %d%%") % (node.name, int(msg.payload)))
 		nodes[node.name] = int(msg.payload)
@@ -129,7 +129,7 @@ async def vlx_cb(node):
 	if not mqttConn:
 		return
 	logging.debug(("%s at %d%%") % (node.name, node.position.position_percent))
-	mqttc.publish('/'+node.name, node.position.position_percent, retain=False)
+	mqttc.publish(node.name, node.position.position_percent, retain=False)
 
 async def main(loop):
 	global running
