@@ -191,11 +191,23 @@ signal.signal(signal.SIGINT, cleanup)
 if __name__ == '__main__':
     # pylint: disable=invalid-name
     LOOP = asyncio.get_event_loop()
+    
+    pid = str(os.getpid())
+    pidfile = "/tmp/vlx.pid"
+
+    if os.path.isfile(pidfile):
+        print("%s already exists, exiting" % pidfile)
+        sys.exit()
+    file = open(pidfile, 'w')
+    file.write(pid)
+    file.close()
 
     try:
     	LOOP.run_until_complete(main(LOOP))
     except KeyboardInterrupt:
 	    logging.info("Interrupted by keypress")
+    finally:
+        os.unlink(pidfile)
     LOOP.close()
     sys.exit(0)
 
