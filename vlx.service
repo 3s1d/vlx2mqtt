@@ -1,0 +1,8 @@
+[Unit]
+Description=VLX / Homecontrol IO via MQTT API
+After=syslog.target
+[Service]
+ExecStart=/home/sid/vlx2mqtt/vlx2mqtt.py /home/sid/vlx2mqtt/vlx2mqtt.cfg
+Restart=always
+[Install]
+WantedBy=multi-user.target
