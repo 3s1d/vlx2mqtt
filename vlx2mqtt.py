@@ -111,7 +111,7 @@ def mqtt_on_disconnect(mosq, obj, return_code):
 		time.sleep(5)
 
 def mqtt_on_message(client, userdata, msg):
-	#set OpeningDevice? 
+	#set OpeningDevice?
 	for node in pyvlx.nodes:
 		if node.name+'/set' not in msg.topic:
 			continue
@@ -133,7 +133,7 @@ async def vlx_cb(node):
 
 async def main(loop):
 	global running
-	global pyvlx
+	global pyvlx, mqttc
 	logging.debug(("klf200      : %s") % (VLX_HOST))    
 	logging.debug(("MQTT broker : %s") % (MQTT_HOST))
 	logging.debug(("  port      : %s") % (str(MQTT_PORT)))
@@ -145,6 +145,11 @@ async def main(loop):
 		logging.info("Connection failed with error code %s. Retrying", result)
 		await asyncio.sleep(10)
 		result = mqttc.connect(MQTT_HOST, MQTT_PORT, 60)
+	mqttc.publish(STATUSTOPIC, "STARTED", retain=True)
+
+	# seems as it must be prior to mqttc loop. otherwise mqtt will not receiving anything...
+	pyvlx = PyVLX(host=VLX_HOST, password=VLX_PW, loop=loop)
+	await pyvlx.load_nodes()
 
 	# Define callbacks
 	mqttc.on_connect = mqtt_on_connect
@@ -153,9 +158,6 @@ async def main(loop):
 
 	mqttc.loop_start()
 	await asyncio.sleep(2)
-
-	pyvlx = PyVLX(host=VLX_HOST, password=VLX_PW, loop=loop)
-	await pyvlx.load_nodes()
 
 	mqttc.publish(STATUSTOPIC, "KLF200_available", retain=True)
 
