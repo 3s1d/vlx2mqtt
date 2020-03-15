@@ -139,13 +139,6 @@ async def main(loop):
 	logging.debug(("  port      : %s") % (str(MQTT_PORT)))
 	logging.debug(("statustopic : %s") % (str(STATUSTOPIC)))
 
-	pyvlx = PyVLX(host=VLX_HOST, password=VLX_PW, loop=loop)
-	await pyvlx.load_nodes()
-
-	logging.debug(("vlx nodes   : %s") % (len(pyvlx.nodes)))
-	for node in pyvlx.nodes:
-		logging.debug(("  %s") % (node.name))
-
 	# Connect to the broker and enter the main loop
 	result = mqttc.connect(MQTT_HOST, MQTT_PORT, 60)
 	while result != 0:
@@ -159,7 +152,16 @@ async def main(loop):
 	mqttc.on_disconnect = mqtt_on_disconnect
 
 	mqttc.loop_start()
-	await asyncio.sleep(1)
+	await asyncio.sleep(2)
+
+	pyvlx = PyVLX(host=VLX_HOST, password=VLX_PW, loop=loop)
+	await pyvlx.load_nodes()
+
+	mqttc.publish(STATUSTOPIC, "KLF200_available", retain=True)
+
+	logging.debug(("vlx nodes   : %s") % (len(pyvlx.nodes)))
+	for node in pyvlx.nodes:
+		logging.debug(("  %s") % (node.name))
 
 	#register callbacks
 	for node in pyvlx.nodes:
