@@ -7,10 +7,10 @@
 #fi
 
 PIDFILE=/tmp/vlx.pid
+RUNNING=0
 
 if [ -f "$PIDFILE" ]
 then
-	RUNNING=0
 	RUNNINGPID=`cat "$PIDFILE"`
 	PROGRAMPID=`ps -aux | grep "vlx2mqtt.py" | grep -v grep | awk '{print $2;}'`
 	for PIDEL in $PROGRAMPID
@@ -21,11 +21,12 @@ then
 			break
 		fi
 	done
-
-	if [ "$RUNNING" == "0" ]
-	then
-		rm -f /tmp/vlx.pid
-		echo "$(date +"%b %_d %T") $(hostname) $0: VLX restart" >> /var/log/messages
-		/bin/systemctl restart vlx
-	fi
 fi
+
+if [ "$RUNNING" == "0" ]
+then
+	rm -f /tmp/vlx.pid
+	echo "$(date +"%b %_d %T") $(hostname) $0: VLX restart" >> /var/log/messages
+	/bin/systemctl restart vlx
+fi
+
