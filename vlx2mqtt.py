@@ -9,6 +9,7 @@ import configparser
 import paho.mqtt.client as mqtt
 import argparse
 import asyncio
+import time
 from pyvlx import Position, PyVLX, OpeningDevice
 from pyvlx.log import PYVLXLOG
 
@@ -207,9 +208,9 @@ if __name__ == '__main__':
     file.close()
 
     try:
-    	LOOP.run_until_complete(main(LOOP))
+        LOOP.run_until_complete(main(LOOP))
     except KeyboardInterrupt:
-	    logging.info("Interrupted by keypress")
+        logging.info("Interrupted by keypress")
     finally:
         os.unlink(pidfile)
     LOOP.close()
